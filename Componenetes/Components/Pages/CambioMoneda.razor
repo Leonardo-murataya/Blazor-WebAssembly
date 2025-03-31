@@ -1,0 +1,190 @@
+@page "/cambio-moneda"
+@using System.Globalization
+@rendermode InteractiveServer
+
+<PageTitle>Cambio de Moneda</PageTitle>
+
+<style>
+    /* Estilos para los símbolos de moneda 3D */
+    .currency-symbol {
+        position: relative;
+        display: inline-block;
+        font-size: 24px;
+        font-weight: bold;
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    .animate-symbol {
+        animation: flyToInput 1s ease-out forwards;
+    }
+
+    .card.animate-card {
+        animation: waveEffect 1.5s ease-in-out;
+    }
+
+    @@keyframes flyToInput {
+        0% {
+            opacity: 1;
+            transform: translate(0, 0) scale(2) rotateY(0deg);
+        }
+        50% {
+            opacity: 1;
+            transform: translate(0, -50px) scale(2.5) rotateY(180deg);
+        }
+        100% {
+            opacity: 1;
+            transform: translate(0, 0) scale(1) rotateY(360deg);
+        }
+    }
+
+    @@keyframes waveEffect {
+        0% { transform: scale(1); }
+        25% { transform: scale(1.05); }
+        50% { transform: scale(0.95); }
+        75% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    .currency-container {
+        position: relative;
+        perspective: 1000px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Cambio de Moneda</h1>
+            <p>Ingrese el monto en Pesos Mexicanos para ver su equivalencia en otras monedas.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label for="pesosMexicanos" class="form-label">Pesos Mexicanos (MXN)</label>
+                <div class="input-group">
+                    <span class="input-group-text">$</span>
+                    <input id="pesosMexicanos" type="number" class="form-control" @bind="pesosMexicanos" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button class="btn btn-primary" @onclick="RealizarConversion">Convertir</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Dólares Americanos -->
+        <div class="col-md-4 mb-3">
+            <div class="currency-container">
+                <div class="currency-symbol dollar-symbol @(showDollarAnimation ? "animate-symbol" : "")" id="dollarSymbol">$</div>
+                <div class="card @(showDollarAnimation ? "animate-card" : "")" id="dollarCard">
+                    <div class="card-header">
+                        <h5>Dólares Americanos (USD)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input type="text" class="form-control" readonly value="@FormatCurrency(ConvertToDollars())" />
+                        </div>
+                        <p class="mt-2 text-muted">Tipo de cambio: 1 MXN = @tipoCambioDolar USD</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Euros -->
+        <div class="col-md-4 mb-3">
+            <div class="currency-container">
+                <div class="currency-symbol euro-symbol @(showEuroAnimation ? "animate-symbol" : "")" id="euroSymbol">€</div>
+                <div class="card @(showEuroAnimation ? "animate-card" : "")" id="euroCard">
+                    <div class="card-header">
+                        <h5>Euros (EUR)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="text" class="form-control" readonly value="@FormatCurrency(ConvertToEuros())" />
+                        </div>
+                        <p class="mt-2 text-muted">Tipo de cambio: 1 MXN = @tipoCambioEuro EUR</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Libras Esterlinas -->
+        <div class="col-md-4 mb-3">
+            <div class="currency-container">
+                <div class="currency-symbol pound-symbol @(showPoundAnimation ? "animate-symbol" : "")" id="poundSymbol">£</div>
+                <div class="card @(showPoundAnimation ? "animate-card" : "")" id="poundCard">
+                    <div class="card-header">
+                        <h5>Libras Esterlinas (GBP)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <span class="input-group-text">£</span>
+                            <input type="text" class="form-control" readonly value="@FormatCurrency(ConvertToLibras())" />
+                        </div>
+                        <p class="mt-2 text-muted">Tipo de cambio: 1 MXN = @tipoCambioLibra GBP</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private decimal pesosMexicanos = 0;
+
+    // Tipos de cambio
+    private readonly decimal tipoCambioDolar = 0.059M; // 1 MXN = 0.059 USD
+    private readonly decimal tipoCambioEuro = 0.053M;  // 1 MXN = 0.053 EUR
+    private readonly decimal tipoCambioLibra = 0.045M; // 1 MXN = 0.045 GBP
+
+    // Variables para controlar las animaciones
+    private bool showDollarAnimation = false;
+    private bool showEuroAnimation = false;
+    private bool showPoundAnimation = false;
+
+    // Métodos para realizar la conversión
+    private decimal ConvertToDollars() => pesosMexicanos * tipoCambioDolar;
+    private decimal ConvertToEuros() => pesosMexicanos * tipoCambioEuro;
+    private decimal ConvertToLibras() => pesosMexicanos * tipoCambioLibra;
+
+    // Formatea el valor numérico en formato de moneda
+    private string FormatCurrency(decimal value)
+    {
+        return value.ToString("N2", CultureInfo.InvariantCulture);
+    }
+
+    // Método invocado al presionar el botón. Actualiza la UI.
+    private async Task RealizarConversion()
+    {
+        // Primero quitamos las animaciones si existían
+        showDollarAnimation = false;
+        showEuroAnimation = false;
+        showPoundAnimation = false;
+        
+        // Forzamos un refresco del UI
+        StateHasChanged();
+        
+        // Esperamos un poco para asegurarnos que las animaciones se reseteen
+        await Task.Delay(50);
+        
+        // Activamos las animaciones secuencialmente
+        showDollarAnimation = true;
+        StateHasChanged();
+        
+        await Task.Delay(300);
+        
+        showEuroAnimation = true;
+        StateHasChanged();
+        
+        await Task.Delay(300);
+        
+        showPoundAnimation = true;
+        StateHasChanged();
+    }
+}
