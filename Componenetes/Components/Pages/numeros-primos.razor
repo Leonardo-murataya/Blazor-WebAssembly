@@ -1,0 +1,76 @@
+@page "/numeros-primos"
+@rendermode InteractiveServer
+
+<h3>Generador de Números Primos</h3>
+
+<div class="mb-3">
+    <label for="numeroMaximo">Introduce un número entero positivo:</label>
+    <input type="number" id="numeroMaximo" @bind="numeroMaximo" min="1" class="form-control" />
+</div>
+<div>
+    <button class="btn btn-primary" @onclick="GenerarPrimos">Generar primos</button>
+</div>
+
+@if (resultadoGenerado)
+{
+    <h4 class="mt-3">Números primos entre 1 y @numeroMaximo:</h4>
+    
+    @if (numerosPrimos.Count == 0)
+    {
+        <p>No se encontraron números primos en este rango.</p>
+    }
+    else
+    {
+        <ul>
+            @foreach (var primo in numerosPrimos)
+            {
+                <li>@primo</li>
+            }
+        </ul>
+    }
+}
+
+@code {
+    private int numeroMaximo;
+    private List<int> numerosPrimos = new List<int>();
+    private bool resultadoGenerado = false;
+
+    private void GenerarPrimos()
+    {
+        numerosPrimos.Clear();
+        resultadoGenerado = false;
+        
+        if (numeroMaximo >= 2)
+        {
+            for (int i = 2; i <= numeroMaximo; i++)
+            {
+                if (EsPrimo(i))
+                {
+                    numerosPrimos.Add(i);
+                }
+            }
+        }
+        
+        resultadoGenerado = true;
+    }
+
+    private bool EsPrimo(int numero)
+    {
+        if (numero <= 1)
+            return false;
+            
+        if (numero <= 3)
+            return true;
+            
+        if (numero % 2 == 0 || numero % 3 == 0)
+            return false;
+            
+        for (int i = 5; i * i <= numero; i += 6)
+        {
+            if (numero % i == 0 || numero % (i + 2) == 0)
+                return false;
+        }
+        
+        return true;
+    }
+}

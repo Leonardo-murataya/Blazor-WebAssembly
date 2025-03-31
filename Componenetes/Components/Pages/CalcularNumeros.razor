@@ -1,0 +1,63 @@
+@page "/calcularnumeros"
+@rendermode InteractiveServer
+
+<h3>Calcular Números entre Dos Valores</h3>
+
+<div class="mb-3">
+    <label for="numero1">Número 1:</label>
+    <input type="number" id="numero1" @bind="numero1" class="form-control" />
+</div>
+<div class="mb-3">
+    <label for="numero2">Número 2:</label>
+    <input type="number" id="numero2" @bind="numero2" class="form-control" />
+</div>
+<div>
+    <button class="btn btn-primary" @onclick="CalcularNumerosEntre">Calcular</button>
+</div>
+
+@if (resultadoCalculado)
+{
+    <h4>Números Pares</h4>
+    <ul>
+        @foreach (var num in numerosPares)
+        {
+            <li>@num</li>
+        }
+    </ul>
+
+    <h4>Números Impares</h4>
+    <ul>
+        @foreach (var num in numerosImpares)
+        {
+            <li>@num</li>
+        }
+    </ul>
+}
+
+@code {
+    private int numero1;
+    private int numero2;
+    private List<int> numerosPares = new List<int>();
+    private List<int> numerosImpares = new List<int>();
+    private bool resultadoCalculado = false;
+
+    private void CalcularNumerosEntre()
+    {
+        numerosPares.Clear();
+        numerosImpares.Clear();
+        resultadoCalculado = false;
+
+        int inicio = Math.Min(numero1, numero2);
+        int fin = Math.Max(numero1, numero2);
+
+        for (int i = inicio; i <= fin; i++)
+        {
+            if (i % 2 == 0)
+                numerosPares.Add(i);
+            else
+                numerosImpares.Add(i);
+        }
+
+        resultadoCalculado = true;
+    }
+}
