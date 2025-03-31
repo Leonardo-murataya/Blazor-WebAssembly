@@ -1,38 +1,159 @@
 @page "/calcularnumeros"
 @rendermode InteractiveServer
 
-<h3>Calcular Números entre Dos Valores</h3>
+<PageTitle>Calcular Números</PageTitle>
 
-<div class="mb-3">
-    <label for="numero1">Número 1:</label>
-    <input type="number" id="numero1" @bind="numero1" class="form-control" />
-</div>
-<div class="mb-3">
-    <label for="numero2">Número 2:</label>
-    <input type="number" id="numero2" @bind="numero2" class="form-control" />
-</div>
-<div>
-    <button class="btn btn-primary" @onclick="CalcularNumerosEntre">Calcular</button>
-</div>
+<style>
+    .number-symbol {
+        position: relative;
+        display: inline-block;
+        font-size: 24px;
+        font-weight: bold;
+        opacity: 0;
+        transform: scale(0);
+    }
 
-@if (resultadoCalculado)
-{
-    <h4>Números Pares</h4>
-    <ul>
-        @foreach (var num in numerosPares)
-        {
-            <li>@num</li>
-        }
-    </ul>
+    .animate-symbol {
+        animation: bounceIn 1s ease-out forwards;
+    }
 
-    <h4>Números Impares</h4>
-    <ul>
-        @foreach (var num in numerosImpares)
-        {
-            <li>@num</li>
-        }
-    </ul>
-}
+    .card.animate-card {
+        animation: fadeInUp 1.2s ease-in-out;
+    }
+
+    .even-number {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 4px;
+        border-radius: 4px;
+        background-color: #0d6efd;
+        color: white;
+        animation: numberAppear 0.4s ease-in-out;
+    }
+
+    .odd-number {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 4px;
+        border-radius: 4px;
+        background-color: #fd7e14;
+        color: white;
+        animation: numberAppear 0.4s ease-in-out;
+    }
+
+    @@keyframes bounceIn {
+        0% { opacity: 0; transform: scale(0); }
+        60% { opacity: 1; transform: scale(1.2); }
+        80% { transform: scale(0.9); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    @@keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+
+    @@keyframes numberAppear {
+        0% { opacity: 0; transform: scale(0); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    .numbers-container {
+        position: relative;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Números entre Dos Valores</h1>
+            <p>Ingrese dos números para ver todos los valores entre ellos, separados por pares e impares.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="numero1" class="form-label">Primer número:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-1-circle"></i></span>
+                    <input id="numero1" type="number" class="form-control" @bind="numero1" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="numero2" class="form-label">Segundo número:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-2-circle"></i></span>
+                    <input id="numero2" type="number" class="form-control" @bind="numero2" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="CalcularNumerosEn">
+                <i class="bi bi-calculator me-2"></i>Calcular
+            </button>
+        </div>
+    </div>
+
+    @if (resultadoCalculado)
+    {
+        <div class="numbers-container">
+            <div class="number-symbol @(showAnimation ? "animate-symbol" : "")" id="numberSymbol">
+                <i class="bi bi-list-ol"></i>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card @(showAnimation ? "animate-card" : "")" style="animation-delay: 0.2s">
+                        <div class="card-header bg-primary text-white">
+                            <h5>Números pares</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (numerosPares.Count == 0)
+                            {
+                                <p>No hay números pares en este rango.</p>
+                            }
+                            else
+                            {
+                                <div>
+                                    @foreach (var num in numerosPares)
+                                    {
+                                        <span class="even-number" style="animation-delay: @(numerosPares.IndexOf(num) * 0.05)s">@num</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card @(showAnimation ? "animate-card" : "")" style="animation-delay: 0.4s">
+                        <div class="card-header bg-warning text-white">
+                            <h5>Números impares</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (numerosImpares.Count == 0)
+                            {
+                                <p>No hay números impares en este rango.</p>
+                            }
+                            else
+                            {
+                                <div>
+                                    @foreach (var num in numerosImpares)
+                                    {
+                                        <span class="odd-number" style="animation-delay: @(numerosImpares.IndexOf(num) * 0.05)s">@num</span>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
 
 @code {
     private int numero1;
@@ -40,16 +161,24 @@
     private List<int> numerosPares = new List<int>();
     private List<int> numerosImpares = new List<int>();
     private bool resultadoCalculado = false;
+    private bool showAnimation = false;
 
-    private void CalcularNumerosEntre()
+    private async Task CalcularNumerosEn()
     {
+        // Reiniciar animaciones y listas
+        showAnimation = false;
+        resultadoCalculado = false;
         numerosPares.Clear();
         numerosImpares.Clear();
-        resultadoCalculado = false;
+        
+        StateHasChanged();
+        await Task.Delay(50);
 
+        // Calcular rango
         int inicio = Math.Min(numero1, numero2);
         int fin = Math.Max(numero1, numero2);
 
+        // Clasificar números
         for (int i = inicio; i <= fin; i++)
         {
             if (i % 2 == 0)
@@ -58,6 +187,8 @@
                 numerosImpares.Add(i);
         }
 
+        // Activar animaciones y mostrar resultados
         resultadoCalculado = true;
+        showAnimation = true;
     }
 }

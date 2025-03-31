@@ -1,0 +1,173 @@
+@page "/numeros-primos"
+@rendermode InteractiveServer
+
+<PageTitle>Generador de Números Primos</PageTitle>
+
+<style>
+    .prime-symbol {
+        position: relative;
+        display: inline-block;
+        font-size: 24px;
+        font-weight: bold;
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    .animate-symbol {
+        animation: popIn 1s ease-out forwards;
+    }
+
+    .card.animate-card {
+        animation: slideIn 1s ease-in-out;
+    }
+
+    .prime-number {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 5px;
+        border-radius: 50%;
+        background-color: rgba(13, 110, 253, 0.7);
+        color: white;
+        font-weight: bold;
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @@keyframes popIn {
+        0% {
+            opacity: 0;
+            transform: scale(0);
+        }
+        60% {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @@keyframes slideIn {
+        0% { transform: translateY(50px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+    }
+
+    @@keyframes fadeIn {
+        0% { opacity: 0; transform: scale(0.5); }
+        100% { opacity: 1; transform: scale(1); }
+    }
+
+    .prime-container {
+        position: relative;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Generador de Números Primos</h1>
+            <p>Ingrese un número entero positivo para encontrar todos los números primos hasta ese valor.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="numeroMaximo" class="form-label">Número máximo:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-123"></i></span>
+                    <input id="numeroMaximo" type="number" class="form-control" @bind="numeroMaximo" min="1" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="GenerarPrimos">
+                <i class="bi bi-calculator me-2"></i>Generar primos
+            </button>
+        </div>
+    </div>
+
+    @if (resultadoGenerado)
+    {
+        <div class="prime-container">
+            <div class="prime-symbol @(showAnimation ? "animate-symbol" : "")" id="primeSymbol">
+                <i class="bi bi-pie-chart"></i>
+            </div>
+            <div class="card @(showAnimation ? "animate-card" : "")" id="resultadoCard">
+                <div class="card-header bg-primary text-white">
+                    <h5>Números primos entre 1 y @numeroMaximo</h5>
+                </div>
+                <div class="card-body">
+                    @if (numerosPrimos.Count == 0)
+                    {
+                        <div class="alert alert-warning">
+                            No se encontraron números primos en este rango.
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Se encontraron @numerosPrimos.Count números primos:</p>
+                        <div class="text-center">
+                            @foreach (var primo in numerosPrimos)
+                            {
+                                <span class="prime-number" style="animation-delay: @(numerosPrimos.IndexOf(primo) * 0.1)s">@primo</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private int numeroMaximo;
+    private List<int> numerosPrimos = new List<int>();
+    private bool resultadoGenerado = false;
+    private bool showAnimation = false;
+
+    private async Task GenerarPrimos()
+    {
+        // Reset animation state
+        showAnimation = false;
+        resultadoGenerado = false;
+        StateHasChanged();
+        await Task.Delay(50);
+        
+        numerosPrimos.Clear();
+        
+        if (numeroMaximo >= 2)
+        {
+            for (int i = 2; i <= numeroMaximo; i++)
+            {
+                if (EsPrimo(i))
+                {
+                    numerosPrimos.Add(i);
+                }
+            }
+        }
+        
+        resultadoGenerado = true;
+        showAnimation = true;
+    }
+
+    private bool EsPrimo(int numero)
+    {
+        if (numero <= 1)
+            return false;
+            
+        if (numero <= 3)
+            return true;
+            
+        if (numero % 2 == 0 || numero % 3 == 0)
+            return false;
+            
+        for (int i = 5; i * i <= numero; i += 6)
+        {
+            if (numero % i == 0 || numero % (i + 2) == 0)
+                return false;
+        }
+        
+        return true;
+    }
+}

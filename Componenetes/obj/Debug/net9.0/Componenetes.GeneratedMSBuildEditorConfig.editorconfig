@@ -24,6 +24,14 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/CalcularNumeros.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYWxjdWxhck51bWVyb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/CalculoDias.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYWxjdWxvRGlhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/CambioMoneda.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDYW1iaW9Nb25lZGEucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
@@ -42,6 +50,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/MiHistoria.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNaUhpc3RvcmlhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/NumerosPrimos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOdW1lcm9zUHJpbW9zLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/Weather.razor]

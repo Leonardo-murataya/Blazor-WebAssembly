@@ -1,0 +1,166 @@
+@page "/calculodias"
+@rendermode InteractiveServer
+
+<PageTitle>Cálculo de Días</PageTitle>
+
+<style>
+    .calendar-symbol {
+        position: relative;
+        display: inline-block;
+        font-size: 24px;
+        font-weight: bold;
+        opacity: 0;
+        transform: scale(0);
+    }
+
+    .animate-symbol {
+        animation: fadeInRotate 1s ease-out forwards;
+    }
+
+    .card.animate-card {
+        animation: pulseEffect 1.5s ease-in-out;
+    }
+
+    @@keyframes fadeInRotate {
+        0% {
+            opacity: 0;
+            transform: scale(0) rotate(0deg);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1.5) rotate(180deg);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) rotate(360deg);
+        }
+    }
+
+    @@keyframes pulseEffect {
+        0% { transform: scale(1); }
+        25% { transform: scale(1.05); }
+        50% { transform: scale(0.97); }
+        75% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    .calendar-container {
+        position: relative;
+        perspective: 1000px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Cálculo de Días del Mes</h1>
+            <p>Ingrese el mes y año para calcular el número de días en ese mes.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="mes" class="form-label">Mes (1-12):</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar-month"></i></span>
+                    <input id="mes" type="number" class="form-control" @bind="mes" min="1" max="12" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="form-group">
+                <label for="anio" class="form-label">Año:</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-calendar-year"></i></span>
+                    <input id="anio" type="number" class="form-control" @bind="anio" min="1" />
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button class="btn btn-primary w-100" @onclick="MostrarDias">Calcular</button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <div class="calendar-container">
+            <div class="calendar-symbol @(showAnimation ? "animate-symbol" : "")" id="calendarSymbol">
+                <i class="bi bi-calendar-check"></i>
+            </div>
+            <div class="card @(showAnimation ? "animate-card" : "")" id="resultCard">
+                <div class="card-header bg-info text-white">
+                    <h5>Resultado</h5>
+                </div>
+                <div class="card-body">
+                    <h4>@mensaje</h4>
+                    @if (esBisiesto)
+                    {
+                        <p class="text-info"><i class="bi bi-info-circle"></i> El año @anio es un año bisiesto.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private int mes;
+    private int anio;
+    private string mensaje = string.Empty;
+    private bool esBisiesto;
+    private bool showAnimation = false;
+
+    private async Task MostrarDias()
+    {
+        // Reiniciamos la animación
+        showAnimation = false;
+        StateHasChanged();
+        await Task.Delay(50);
+        
+        try
+        {
+            int dias = ObtenerDiasDelMes(mes, anio);
+            esBisiesto = EsAnioBisiesto(anio);
+            mensaje = $"El mes {mes} del año {anio} tiene {dias} días.";
+            
+            // Activamos la animación
+            showAnimation = true;
+        }
+        catch (ArgumentException ex)
+        {
+            mensaje = ex.Message;
+            esBisiesto = false;
+            showAnimation = true;
+        }
+    }
+
+    private int ObtenerDiasDelMes(int mes, int anio)
+    {
+        switch (mes)
+        {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                return 31;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return 30;
+            case 2:
+                return EsAnioBisiesto(anio) ? 29 : 28;
+            default:
+                throw new ArgumentException("Mes inválido. Ingrese un valor entre 1 y 12.");
+        }
+    }
+
+    private bool EsAnioBisiesto(int anio)
+    {
+        return (anio % 4 == 0 && anio % 100 != 0) || (anio % 400 == 0);
+    }
+}
