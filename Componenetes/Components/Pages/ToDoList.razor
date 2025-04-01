@@ -1,0 +1,67 @@
+@page "/ToDoList"
+@rendermode InteractiveServer
+<PageTitle>ToDoList</PageTitle>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>ToDoList</h1>
+            <p>Ingrese su tarea y haga clic en "Agregar" para añadirla a la lista.</p>
+            
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Ingrese su tarea" id="taskAdd" @bind="@taskAdd" />
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-primary" @onclick="AddTask">Agregar</button>
+        </div>
+    </div>
+    
+    <div class="list-group" id="taskList">
+        @foreach (var task in tasks)
+        {
+            <li class="list-group-item">
+
+                <label class="list-group-item">
+                    <div class="d-flex align-items-center justify-content-around">
+                        <input class="form-check-input me-1 col-2" type="checkbox" value="">
+                
+                        <span class="badge bg-primary rounded-pill me-2 d-flex justify-content-center">@(tasks.IndexOf(task) + 1)</span>
+                
+                        <div class="d-flex col-10 justify-content-between align-items-center bg-white border-start ps-2">
+                            <span class="text-center">@task</span>
+                            
+                            <button class="btn btn-danger btn-sm" @onclick="@(() => RemoveTask(task))">Eliminar</button>
+                        </div>
+                    </div>
+                </label>
+                
+            </li>
+            
+        }
+    </div>
+    
+</div>
+
+@code {
+    private List<string> tasks = new List<string>();
+    private string taskAdd;
+    
+    private void AddTask()
+    {
+        if (!string.IsNullOrEmpty(taskAdd))
+        {
+            tasks.Add(taskAdd);
+            taskAdd = string.Empty;
+        }
+    }
+    
+    private void RemoveTask(string task)
+    {
+        tasks.Remove(task);
+    }
+    
+}
