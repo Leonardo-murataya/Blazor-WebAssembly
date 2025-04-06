@@ -1,0 +1,112 @@
+@page "/SongList"
+@rendermode InteractiveServer
+<PageTitle>Lista de Canciones</PageTitle>
+
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Lista de Canciones</h1>
+            <p>Ingrese el título de la canción y haga clic en "Agregar" para añadirla a la lista.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Ingrese el título de la canción" @bind="@songTitle" />
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-primary" @onclick="AddSong">Agregar</button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <input type="text" class="form-control" placeholder="Filtrar por palabra clave" @bind="@filterKeyword" />
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-secondary" @onclick="ApplyFilter">Aplicar Filtro</button>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <button class="btn btn-info" @onclick="SortAscending">Ordenar Ascendente</button>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-info" @onclick="SortDescending">Ordenar Descendente</button>
+        </div>
+    </div>
+
+    <div class="list-group" id="songList">
+        @foreach (var song in filteredSongs)
+        {
+            <li class="list-group-item">
+                <div class="d-flex align-items-center justify-content-between">
+                    <span>@song</span>
+                    <div>
+                        <button class="btn btn-warning btn-sm me-2" @onclick="@(() => EditSong(song))">Modificar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="@(() => RemoveSong(song))">Eliminar</button>
+                    </div>
+                </div>
+            </li>
+        }
+    </div>
+</div>
+
+@code {
+    private List<string> songs = new List<string>();
+    private List<string> filteredSongs = new List<string>();
+    private string songTitle;
+    private string filterKeyword;
+
+    protected override void OnInitialized()
+    {
+        filteredSongs = new List<string>(songs);
+    }
+
+    private void AddSong()
+    {
+        if (!string.IsNullOrEmpty(songTitle))
+        {
+            songs.Add(songTitle);
+            songTitle = string.Empty;
+            ApplyFilter();
+        }
+    }
+
+    private void RemoveSong(string song)
+    {
+        songs.Remove(song);
+        ApplyFilter();
+    }
+
+    private void EditSong(string song)
+    {
+        songTitle = song;
+        RemoveSong(song);
+    }
+
+    private void SortAscending()
+    {
+        songs.Sort();
+        ApplyFilter();
+    }
+
+    private void SortDescending()
+    {
+        songs.Sort((a, b) => b.CompareTo(a));
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (string.IsNullOrEmpty(filterKeyword))
+        {
+            filteredSongs = new List<string>(songs);
+        }
+        else
+        {
+            filteredSongs = songs.Where(s => s.Contains(filterKeyword, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+    }
+}
