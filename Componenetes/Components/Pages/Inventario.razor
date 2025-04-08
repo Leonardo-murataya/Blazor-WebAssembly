@@ -1,0 +1,268 @@
+@page "/Inventario"
+@rendermode InteractiveServer
+<PageTitle>Inventario de Productos</PageTitle>
+
+
+<!-- main -->
+<div class="container mt-4">
+    
+    <!-- Encabezado cartd -->
+    <div class="card mb-4">
+        <div class="card-body bg-light">
+            <h1>Inventario de Productos</h1>
+            <p>Ingrese los datos del producto y haga clic en "Guardar" para añadirlo al inventario.</p>
+        </div>
+    </div>
+    
+    
+    <!-- Formulario para agregar/editar productos -->
+    <div class="row mb-4">
+        
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    
+                    <!-- Fomularios seccion 1 -->
+                    <div class="mb-3">
+
+                        <label for="numeroInventario" class="form-label">Número de Inventario:</label>
+
+                        <input type="number" class="form-control" id="numeroInventario" @bind="@nuevoProducto.NumeroInventario" min="1" required/>
+
+                        <!-- validar que el numero de inventario sea un numero entero positivo -->
+                        @if (!esNumeroInventarioValido)
+                        {
+                            <div class="alert alert-danger mt-2">
+                                El número de inventario debe ser un número entero positivo.
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Fomularios seccion 2 -->
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" @bind="@nuevoProducto.Nombre" maxlength="200" required/>
+                        
+                        <!-- validar que el nombre no sea vacio y tenga maximo 200 caracteres -->
+                        @if (!esNombreValido)
+                        {
+                            <div class="alert alert-danger mt-2">
+                                El nombre no puede estar vacío y debe tener máximo 200 caracteres.
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Fomularios seccion 3 -->
+                    <div class="mb-3">
+                        
+                        <!-- Seccion de departamentos -->
+                        <label for="departamento" class="form-label">Departamento:</label>
+                        
+                        <select class="form-select" id="departamento" @bind="@nuevoProducto.Departamento">
+                            <option value="Frutas">Frutas</option>
+                            <option value="Verduras">Verduras</option>
+                            <option value="Lácteos">Lácteos</option>
+                        </select>
+                    </div>
+
+                    <!-- Validar que el numero de inventario no se repita -->
+                    @if (mostrarErrorInventarioRepetido)
+                    {
+                        <div class="alert alert-danger mt-2">
+                            El número de inventario ya existe. No se permiten números de inventario repetidos.
+                        </div>
+                    }
+
+                    <!-- Botones de guardar/actualizar -->
+                    @if (modoEdicion)
+                    {
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-success" @onclick="ActualizarProducto">Actualizar</button>
+                            <button class="btn btn-secondary" @onclick="CancelarEdicion">Cancelar</button>
+                        </div>
+                    }
+                    else 
+                    {
+                        <button class="btn btn-primary" @onclick="GuardarProducto">Guardar</button>
+                    }
+                    <!-- si no se esta editando -->
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- Seccion de listado y existencias -->
+    <div class="mb-3">
+        <div class="btn-group" role="group">
+            
+            <!-- Botones para mostrar listado o existencias usando altenadores -->
+            <button class="btn btn-outline-primary @(mostrarListado ? "active" : "")" @onclick="MostrarListado">Listado</button>
+            <button class="btn btn-outline-primary @(!mostrarListado ? "active" : "")" @onclick="MostrarExistencias">Existencias</button>
+        </div>
+    </div>
+
+    @if (mostrarListado)
+    {
+        <div class="card">
+            <div class="card-body">
+                <h3>Listado de Productos</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Número de Inventario</th>
+                        <th>Nombre</th>
+                        <th>Departamento</th>
+                        <th>Acciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var producto in productos)
+                    {
+                        <tr>
+                            <!-- Mostrar datos del producto -->
+                            <td>@producto.NumeroInventario</td>
+                            <td>@producto.Nombre</td>
+                            <td>@producto.Departamento</td>
+                            <td>
+                                <div class="btn-group d-flex gap-2" role="group">
+                                    <button class="btn btn-warning btn-sm rounded-1" @onclick="() => EditarProducto(producto)">Editar</button>
+                                    <button class="btn btn-danger btn-sm rounded-1" @onclick="() => EliminarProducto(producto)">Eliminar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                
+                <!-- Seccion de existencias -->
+                <h3>Existencias por Departamento</h3>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Departamento</th>
+                        <th>Cantidad de Productos</th>
+                    </tr>
+                    </thead>
+                    
+                    <!-- Contar productos por departamento -->
+                    <tbody>
+                    <tr>
+                        <td>Frutas</td>
+                        <td>@productos.Count(p => p.Departamento == "Frutas")</td>
+                    </tr>
+                    <tr>
+                        <td>Verduras</td>
+                        <td>@productos.Count(p => p.Departamento == "Verduras")</td>
+                    </tr>
+                    <tr>
+                        <td>Lácteos</td>
+                        <td>@productos.Count(p => p.Departamento == "Lácteos")</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Producto> productos = new();
+    private Producto nuevoProducto = new() { Departamento = "Frutas" };
+    private bool mostrarListado = true;
+    private bool modoEdicion = false;
+    private int indiceEdicion = -1;
+    private bool mostrarErrorInventarioRepetido = false;
+    private bool esNumeroInventarioValido = true;
+    private bool esNombreValido = true;
+
+    private bool ValidarProducto()
+    {
+        // Resetear estados de validación
+        esNumeroInventarioValido = nuevoProducto.NumeroInventario > 0;
+        esNombreValido = !string.IsNullOrWhiteSpace(nuevoProducto.Nombre) && nuevoProducto.Nombre.Length <= 200;
+        
+        // Comprobar si el número de inventario ya existe (exceptuando el producto en edición)
+        bool numeroRepetido = productos.Any(p => 
+            p.NumeroInventario == nuevoProducto.NumeroInventario && 
+            (!modoEdicion || productos.IndexOf(p) != indiceEdicion));
+            
+        mostrarErrorInventarioRepetido = numeroRepetido;
+        
+        return esNumeroInventarioValido && esNombreValido && !numeroRepetido;
+    }
+
+    private void GuardarProducto()
+    {
+        if (!ValidarProducto()) return;
+
+        productos.Add(new Producto
+        {
+            NumeroInventario = nuevoProducto.NumeroInventario,
+            Nombre = nuevoProducto.Nombre,
+            Departamento = nuevoProducto.Departamento
+        });
+
+        LimpiarFormulario();
+    }
+
+    private void ActualizarProducto()
+    {
+        if (!ValidarProducto()) return;
+
+        productos[indiceEdicion] = new Producto
+        {
+            NumeroInventario = nuevoProducto.NumeroInventario,
+            Nombre = nuevoProducto.Nombre,
+            Departamento = nuevoProducto.Departamento
+        };
+
+        CancelarEdicion();
+    }
+
+    private void EditarProducto(Producto producto)
+    {
+        modoEdicion = true;
+        indiceEdicion = productos.IndexOf(producto);
+        nuevoProducto = new Producto
+        {
+            NumeroInventario = producto.NumeroInventario,
+            Nombre = producto.Nombre,
+            Departamento = producto.Departamento
+        };
+    }
+
+    private void EliminarProducto(Producto producto) => productos.Remove(producto);
+
+    private void CancelarEdicion() => LimpiarFormulario();
+    
+    private void LimpiarFormulario()
+    {
+        modoEdicion = false;
+        indiceEdicion = -1;
+        nuevoProducto = new() { Departamento = "Frutas" };
+        mostrarErrorInventarioRepetido = false;
+        esNumeroInventarioValido = true;
+        esNombreValido = true;
+    }
+
+    private void MostrarListado() => mostrarListado = true;
+
+    private void MostrarExistencias() => mostrarListado = false;
+
+    public class Producto
+    {
+        public int NumeroInventario { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public string Departamento { get; set; } = "Frutas";
+    }
+}

@@ -48,12 +48,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/Inventario.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbnZlbnRhcmlvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/MiHistoria.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xNaUhpc3RvcmlhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/NumerosPrimos.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOdW1lcm9zUHJpbW9zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/SongList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTb25nTGlzdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Leonardoo/RiderProjects/Blazor-WebAssembly/Componenetes/Components/Pages/ToDoList.razor]
